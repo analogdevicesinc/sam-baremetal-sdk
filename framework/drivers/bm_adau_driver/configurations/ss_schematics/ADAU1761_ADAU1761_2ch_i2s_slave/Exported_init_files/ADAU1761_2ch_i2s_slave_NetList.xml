@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--NetList XML file-->
+<NetList>
+    <IC name=" ADAU1761 " type="DSPSigmaLP1">
+        <Schematic>
+            <Algorithm name="ICSigma200In1" friendlyname="Analog+Digital Inputs" cell="Input1 ">
+                <Link pin="O_C0_A0_P1_out" dir="out" link="Link13" />
+                <Link pin="O_C0_A0_P2_out" dir="out" link="Link14" />
+                <Link pin="O_C0_A0_P3_out" dir="out" link="Link11" />
+                <Link pin="O_C0_A0_P4_out" dir="out" link="Link12" />
+            </Algorithm>
+            <Algorithm name="DCInpAlg1" friendlyname="dc Input" cell="DC1 ">
+                <Link pin="O_C15_A0_P1_out" dir="out" link="Link0" />
+            </Algorithm>
+            <Algorithm name="sin_lookupAlg19402" friendlyname="Tone Synthesis (lookup/sine)" cell="Tone1_2 ">
+                <Link pin="O_C158_A0_P1_out" dir="out" link="Link16" />
+            </Algorithm>
+            <Algorithm name="sin_lookupAlg19401" friendlyname="Tone Synthesis (lookup/sine)" cell="Tone1_3 ">
+                <Link pin="O_C143_A0_P1_out" dir="out" link="Link15" />
+            </Algorithm>
+            <Algorithm name="ReadBackAlgSigma2001" friendlyname="Data Capture Register Readback Sigma200" cell="ReadBack1 ">
+                <Link pin="I_C17_A0_P1_in" dir="in" link="Link0" />
+            </Algorithm>
+            <Algorithm name="StMuxSwSlew1" friendlyname="Stereo SW Slew" cell="Nx2-1_3 ">
+                <Link pin="I_C21_A0_P3_in" dir="in" link="Link15" />
+                <Link pin="I_C21_A0_P4_in" dir="in" link="Link15" />
+                <Link pin="I_C21_A0_P5_in" dir="in" link="Link13" />
+                <Link pin="I_C21_A0_P6_in" dir="in" link="Link14" />
+                <Link pin="I_C21_A0_P7_in" dir="in" link="Link11" />
+                <Link pin="I_C21_A0_P8_in" dir="in" link="Link12" />
+                <Link pin="O_C21_A0_P1_out" dir="out" link="Link3" />
+                <Link pin="O_C21_A0_P2_out" dir="out" link="Link4" />
+            </Algorithm>
+            <Algorithm name="GainS200AlgGrowDBStep1" friendlyname="Gain (DB) - Growable" cell="Single 1_3 ">
+                <Link pin="I_C36_A0_P1_in" dir="in" link="Link11" />
+                <Link pin="I_C36_A0_P3_in" dir="in" link="Link12" />
+                <Link pin="O_C36_A0_P2_out" dir="out" link="Link1" />
+                <Link pin="O_C36_A0_P4_out" dir="out" link="Link2" />
+            </Algorithm>
+            <Algorithm name="StMuxSwSlew2" friendlyname="Stereo SW Slew" cell="Nx2-1_2 ">
+                <Link pin="I_C77_A0_P3_in" dir="in" link="Link13" />
+                <Link pin="I_C77_A0_P4_in" dir="in" link="Link14" />
+                <Link pin="I_C77_A0_P5_in" dir="in" link="Link1" />
+                <Link pin="I_C77_A0_P6_in" dir="in" link="Link2" />
+                <Link pin="I_C77_A0_P7_in" dir="in" link="Link16" />
+                <Link pin="I_C77_A0_P8_in" dir="in" link="Link16" />
+                <Link pin="O_C77_A0_P1_out" dir="out" link="Link8" />
+                <Link pin="O_C77_A0_P2_out" dir="out" link="Link6" />
+            </Algorithm>
+            <Algorithm name="GainS200AlgGrowDBStep3" friendlyname="Gain (DB) - Growable" cell="Single 1_4 ">
+                <Link pin="I_C75_A0_P1_in" dir="in" link="Link3" />
+                <Link pin="I_C75_A0_P3_in" dir="in" link="Link4" />
+                <Link pin="O_C75_A0_P2_out" dir="out" link="Link9" />
+                <Link pin="O_C75_A0_P4_out" dir="out" link="Link10" />
+            </Algorithm>
+            <Algorithm name="GainS200AlgGrowDBStep2" friendlyname="Gain (DB) - Growable" cell="Single 1_2 ">
+                <Link pin="I_C124_A0_P1_in" dir="in" link="Link8" />
+                <Link pin="I_C124_A0_P3_in" dir="in" link="Link6" />
+                <Link pin="O_C124_A0_P2_out" dir="out" link="Link7" />
+                <Link pin="O_C124_A0_P4_out" dir="out" link="Link5" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out3" friendlyname="1761 output" cell="Output3 ">
+                <Link pin="I_C70_A0_P1_in" dir="in" link="Link9" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out4" friendlyname="1761 output" cell="Output4 ">
+                <Link pin="I_C72_A0_P1_in" dir="in" link="Link10" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out2" friendlyname="1761 output" cell="Output2 ">
+                <Link pin="I_C13_A0_P1_in" dir="in" link="Link5" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out1" friendlyname="1761 output" cell="Output1 ">
+                <Link pin="I_C11_A0_P1_in" dir="in" link="Link7" />
+            </Algorithm>
+        </Schematic>
+    </IC>
+</NetList>

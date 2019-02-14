@@ -1,0 +1,96 @@
+# Standard CCES build files
+system.tmp.svc
+
+# Object files
+*.o
+*.d
+*.doj
+*.elf
+
+# Shared memory objects 
+*.sm
+
+# Linker output files
+linker_log.xml
+*.map.xml
+
+# CCES backup files
+*.backup
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor Config
+*.editorconfig
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+# =========================
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# Eclipse specific files/directories #
+######################################
+eclipse
+.classpath/
+.metadata/
+.settings/
+.vscode
+
+*.log
+*.lock
+
+subdir.mk
+sources.mk
+makefile
+input-file.txt
+
+#Sigma Studio Intermediate files
+compiler-output.txt
+Program.bin
+Program.dat
+
+Debug/
+Release/
+scancode-results/
+Linux-Boot/
+docs/dokuwiki
+RemoteSystemsTempFiles/

@@ -1,0 +1,68 @@
+0x00, 0x06, 			/* (0) ADAU1966.DAC_CTRL0 */
+0x19, 
+0x00, 0x00, 			/* (1) ADAU1966.PLL_CLK_CTRL0 Register.PLL_CLK_CTRL0 */
+0x31, 
+0x00, 0x01, 			/* (2) ADAU1966.PLL_CLK_CTRL1 Register.PLL_CLK_CTRL1 */
+0x3E, 
+0x00, 0x02, 			/* (3) ADAU1966.PDN_THRMSENS_CTRL_1 Register.PDN_THRMSENS_CTRL_1 */
+0xA0, 
+0x00, 0x03, 			/* (4) ADAU1966.PDN_CTRL2 Register.PDN_CTRL2 */
+0x00, 
+0x00, 0x04, 			/* (5) ADAU1966.PDN_CTRL3 Register.PDN_CTRL3 */
+0x00, 
+0x00, 0x06, 			/* (6) ADAU1966.DAC_CTRL0 Register.DAC_CTRL0 */
+0x19, 
+0x00, 0x07, 			/* (7) ADAU1966.DAC_CTRL1 Register.DAC_CTRL1 */
+0x20, 
+0x00, 0x08, 			/* (8) ADAU1966.DAC_CTRL2 Register.DAC_CTRL2 */
+0x02, 
+0x00, 0x09, 			/* (9) ADAU1966.DAC_MUTE1 Register.DAC_MUTE1 */
+0x00, 
+0x00, 0x0A, 			/* (10) ADAU1966.DAC_MUTE2 Register.DAC_MUTE2 */
+0x00, 
+0x00, 0x0B, 			/* (11) ADAU1966.DACMSTR_VOL Register.DACMSTR_VOL */
+0x03, 
+0x00, 0x0C, 			/* (12) ADAU1966.DAC01_VOL Register.DAC01_VOL */
+0x00, 
+0x00, 0x0D, 			/* (13) ADAU1966.DAC02_VOL Register.DAC02_VOL */
+0x00, 
+0x00, 0x0E, 			/* (14) ADAU1966.DAC03_VOL Register.DAC03_VOL */
+0x00, 
+0x00, 0x0F, 			/* (15) ADAU1966.DAC04_VOL Register.DAC04_VOL */
+0x00, 
+0x00, 0x10, 			/* (16) ADAU1966.DAC05_VOL Register.DAC05_VOL */
+0x00, 
+0x00, 0x11, 			/* (17) ADAU1966.DAC06_VOL Register.DAC06_VOL */
+0x00, 
+0x00, 0x12, 			/* (18) ADAU1966.DAC07_VOL Register.DAC07_VOL */
+0x00, 
+0x00, 0x13, 			/* (19) ADAU1966.DAC08_VOL Register.DAC08_VOL */
+0x00, 
+0x00, 0x14, 			/* (20) ADAU1966.DAC09_VOL Register.DAC09_VOL */
+0x00, 
+0x00, 0x15, 			/* (21) ADAU1966.DAC10_VOL Register.DAC10_VOL */
+0x00, 
+0x00, 0x16, 			/* (22) ADAU1966.DAC11_VOL Register.DAC11_VOL */
+0x00, 
+0x00, 0x17, 			/* (23) ADAU1966.DAC12_VOL Register.DAC12_VOL */
+0x00, 
+0x00, 0x18, 			/* (24) ADAU1966.DAC13_VOL Register.DAC13_VOL */
+0x00, 
+0x00, 0x19, 			/* (25) ADAU1966.DAC14_VOL Register.DAC14_VOL */
+0x00, 
+0x00, 0x1A, 			/* (26) ADAU1966.DAC15_VOL Register.DAC15_VOL */
+0x00, 
+0x00, 0x1B, 			/* (27) ADAU1966.DAC16_VOL Register.DAC16_VOL */
+0x00, 
+0x00, 0x1C, 			/* (28) ADAU1966.CM_SEL_PAD_STRGTH Register.CM_SEL_PAD_STRGTH */
+0x02, 
+0x00, 0x1D, 			/* (29) ADAU1966.DAC_POWER1 Register.DAC_POWER1 */
+0xAA, 
+0x00, 0x1E, 			/* (30) ADAU1966.DAC_POWER2 Register.DAC_POWER2 */
+0xAA, 
+0x00, 0x1F, 			/* (31) ADAU1966.DAC_POWER3 Register.DAC_POWER3 */
+0xAA, 
+0x00, 0x20, 			/* (32) ADAU1966.DAC_POWER4 Register.DAC_POWER4 */
+0xAA, 
+0x00, 0x06, 			/* (33) ADAU1966.DAC_CTRL0 */
+0x18, 

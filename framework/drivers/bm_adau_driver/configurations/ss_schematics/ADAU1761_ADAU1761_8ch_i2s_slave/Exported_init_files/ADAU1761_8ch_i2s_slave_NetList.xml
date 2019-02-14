@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--NetList XML file-->
+<NetList>
+    <IC name=" ADAU1761 " type="DSPSigmaLP1">
+        <Schematic>
+            <Algorithm name="ICSigma200In1" friendlyname="Analog+Digital Inputs" cell="Input1 ">
+                <Link pin="O_C0_A0_P1_out" dir="out" link="Link1" />
+                <Link pin="O_C0_A0_P2_out" dir="out" link="Link2" />
+                <Link pin="O_C0_A0_P3_out" dir="out" link="Link3" />
+                <Link pin="O_C0_A0_P5_out" dir="out" link="Link4" />
+            </Algorithm>
+            <Algorithm name="DCInpAlg1" friendlyname="dc Input" cell="DC1 ">
+                <Link pin="O_C15_A0_P1_out" dir="out" link="Link0" />
+            </Algorithm>
+            <Algorithm name="DCInpAlg2" friendlyname="dc Input" cell="DC1_2 ">
+                <Link pin="O_C133_A0_P1_out" dir="out" link="Link5" />
+            </Algorithm>
+            <Algorithm name="ReadBackAlgSigma2001" friendlyname="Data Capture Register Readback Sigma200" cell="ReadBack1 ">
+                <Link pin="I_C17_A0_P1_in" dir="in" link="Link0" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out9" friendlyname="1761 output" cell="Output3_6 ">
+                <Link pin="I_C124_A0_P1_in" dir="in" link="Link5" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out10" friendlyname="1761 output" cell="Output3_7 ">
+                <Link pin="I_C149_A0_P1_in" dir="in" link="Link5" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out5" friendlyname="1761 output" cell="Output3_2 ">
+                <Link pin="I_C148_A0_P1_in" dir="in" link="Link5" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out6" friendlyname="1761 output" cell="Output3_3 ">
+                <Link pin="I_C151_A0_P1_in" dir="in" link="Link5" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out8" friendlyname="1761 output" cell="Output3_5 ">
+                <Link pin="I_C197_A0_P1_in" dir="in" link="Link5" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out7" friendlyname="1761 output" cell="Output3_4 ">
+                <Link pin="I_C195_A0_P1_in" dir="in" link="Link5" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out1" friendlyname="1761 output" cell="Output1 ">
+                <Link pin="I_C11_A0_P1_in" dir="in" link="Link3" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out2" friendlyname="1761 output" cell="Output2 ">
+                <Link pin="I_C13_A0_P1_in" dir="in" link="Link4" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out3" friendlyname="1761 output" cell="Output3 ">
+                <Link pin="I_C70_A0_P1_in" dir="in" link="Link1" />
+            </Algorithm>
+            <Algorithm name="ICSigmaLP1Out4" friendlyname="1761 output" cell="Output4 ">
+                <Link pin="I_C72_A0_P1_in" dir="in" link="Link2" />
+            </Algorithm>
+            <Algorithm name="SingleBandLevelDetS2001" friendlyname="Single Band Sigma200" cell="1 X RTA1 ">
+                <Link pin="I_C19_A0_P1_in" dir="in" link="Link1" />
+            </Algorithm>
+            <Algorithm name="SingleBandLevelDetS2002" friendlyname="Single Band Sigma200" cell="1 X RTA2 ">
+                <Link pin="I_C35_A0_P1_in" dir="in" link="Link2" />
+            </Algorithm>
+        </Schematic>
+    </IC>
+</NetList>
