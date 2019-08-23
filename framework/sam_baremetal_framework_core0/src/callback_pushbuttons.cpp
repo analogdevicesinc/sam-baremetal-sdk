@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Analog Devices, Inc.  All rights reserved.
+ * Copyright (c) 2018-2019 Analog Devices, Inc.  All rights reserved.
  *
  * Callbacks for various pushbuttons
  *
@@ -58,16 +58,16 @@ void pushbutton_callback_external_1(void  *data_object) {
     // If SW is controlling an on-off state, set LED to reflect state
 	// Remove this code if SW will be used to trigger an event rather than toggle a state
     multicore_data->audioproj_fin_sw_1_state = !multicore_data->audioproj_fin_sw_1_state;
-    if (multicore_data->audioproj_fin_sw_1_state) {
-        gpio_write(GPIO_AUDIOPROJ_FIN_LED_SW1, GPIO_HIGH);
-    }
-    else {
-        gpio_write(GPIO_AUDIOPROJ_FIN_LED_SW1, GPIO_LOW);
-    }
 
     // Update our multicore structure to let the SHARCs know that a SW has been pressed
     multicore_data->audioproj_fin_sw_1_core1_pressed = true;
     multicore_data->audioproj_fin_sw_1_core2_pressed = true;
+
+    // Decrement our reverb effect
+    multicore_data->reverb_preset--;
+    if (multicore_data->reverb_preset >= multicore_data->total_effects_presets) {
+    	multicore_data->reverb_preset = multicore_data->total_effects_presets - 1;
+    }
 
     // Add custom code here
 }
@@ -82,16 +82,16 @@ void pushbutton_callback_external_2(void  *data_object) {
     // If SW is controlling an on-off state, set LED to reflect state
 	// Remove this code if SW will be used to trigger an event rather than toggle a state
     multicore_data->audioproj_fin_sw_2_state = !multicore_data->audioproj_fin_sw_2_state;
-    if (multicore_data->audioproj_fin_sw_2_state) {
-        gpio_write(GPIO_AUDIOPROJ_FIN_LED_SW2, GPIO_HIGH);
-    }
-    else {
-        gpio_write(GPIO_AUDIOPROJ_FIN_LED_SW2, GPIO_LOW);
-    }
 
     // Update our multicore structure to let the SHARCs know that a PB has been pressed
     multicore_data->audioproj_fin_sw_2_core1_pressed = true;
     multicore_data->audioproj_fin_sw_2_core2_pressed = true;
+
+    // Increment our reverb effect
+    multicore_data->reverb_preset++;
+    if (multicore_data->reverb_preset >= multicore_data->total_effects_presets) {
+    	multicore_data->reverb_preset = 0;
+    }
 
     // Add custom code here
 }
@@ -106,18 +106,19 @@ void pushbutton_callback_external_3(void  *data_object) {
     // If SW is controlling an on-off state, set LED to reflect state
 	// Remove this code if SW will be used to trigger an event rather than toggle a state
     multicore_data->audioproj_fin_sw_3_state = !multicore_data->audioproj_fin_sw_3_state;
-    if (multicore_data->audioproj_fin_sw_3_state) {
-        gpio_write(GPIO_AUDIOPROJ_FIN_LED_SW3, GPIO_HIGH);
-    }
-    else {
-        gpio_write(GPIO_AUDIOPROJ_FIN_LED_SW3, GPIO_LOW);
-    }
 
     // Update our multicore structure to let the SHARCs know that a PB has been pressed
     multicore_data->audioproj_fin_sw_3_core1_pressed = true;
     multicore_data->audioproj_fin_sw_3_core2_pressed = true;
 
+    // Decrement our current effect
+    multicore_data->effects_preset--;
+    if (multicore_data->effects_preset >= multicore_data->total_effects_presets) {
+    	multicore_data->effects_preset = multicore_data->total_effects_presets - 1;
+    }
+
     // Add custom code here
+
 }
 
 /**
@@ -130,17 +131,18 @@ void pushbutton_callback_external_4(void  *data_object) {
     // If SW is controlling an on-off state, set LED to reflect state
 	// Remove this code if SW will be used to trigger an event rather than toggle a state
     multicore_data->audioproj_fin_sw_4_state = !multicore_data->audioproj_fin_sw_4_state;
-    if (multicore_data->audioproj_fin_sw_4_state) {
-        gpio_write(GPIO_AUDIOPROJ_FIN_LED_SW4, GPIO_HIGH);
-    }
-    else {
-        gpio_write(GPIO_AUDIOPROJ_FIN_LED_SW4, GPIO_LOW);
-    }
 
     // Update our multicore structure to let the SHARCs know that a PB has been pressed
     multicore_data->audioproj_fin_sw_4_core1_pressed = true;
     multicore_data->audioproj_fin_sw_4_core2_pressed = true;
 
+    // Increment our current effect
+    multicore_data->effects_preset++;
+    if (multicore_data->effects_preset >= multicore_data->total_effects_presets) {
+    	multicore_data->effects_preset = 0;
+    }
+
     // Add custom code here
+
 }
 #endif

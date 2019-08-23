@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2018 Analog Devices, Inc.  All rights reserved.
+ * Copyright (c) 2018-2019 Analog Devices, Inc.  All rights reserved.
  *
  * These are the hooks for the audio processing functions.
  *
  */
 
+#include <audio_processing/audio_effects_selector.h>
 #include <math.h>
 
 // Define your audio system parameters in this file
@@ -16,7 +17,10 @@
 // Variables related to the audio framework that is currently selected (e.g. input and output buffers)
 #include "audio_framework_selector.h"
 
-// Prototypes for these functions
+// Includes all header files for effects and calls for effect selector
+#include "audio_processing/audio_effects_selector.h"
+
+// Prototypes for this file
 #include "callback_audio_processing.h"
 
 /*
@@ -188,108 +192,136 @@
  */
 void processaudio_setup(void) {
 
-    // *******************************************************************************
-    // Add any custom setup code here
-    // *******************************************************************************
+	// Initialize the audio effects in the audio_processing/ folder
+	audio_effects_setup_core1();
+
+	// *******************************************************************************
+	// Add any custom setup code here
+	// *******************************************************************************
+
 }
 
- /*
-  * This callback is called every time we have a new audio buffer that is ready
-  * for processing.  It's currently configured for in-place processing so if no
-  * processing is done to the audio, it is passed through unaffected.
-  *
-  * See the header file for the framework you have selected in the Audio_Frameworks
-  * directory for a list of the input and output buffers that are available based on
-  * the framework and hardware.
-  *
-  * The two SHARC cores provide a hefty amount of audio processing power. However, it is important
-  * to ensure that any audio processing code can run and complete within one frame of audio.
-  *
-  * The total number of cycles available in the audio callback can be calculated as follows:
-  * total cycles = ( processor-clock-speed * audio-block-size ) / audio-sample-rate
-  *
-  * For example, if the processor is running at 450MHz, the audio sampling rate is 48KHz and the audio
-  * block size is set to 32 words, the total number of processor cycles available in each callback
-  * is 300,000 cycles or 300,000/32 or 9,375 per sample of audio
-  */
+/*
+ * This callback is called every time we have a new audio buffer that is ready
+ * for processing.  It's currently configured for in-place processing so if no
+ * processing is done to the audio, it is passed through unaffected.
+ *
+ * See the header file for the framework you have selected in the Audio_Frameworks
+ * directory for a list of the input and output buffers that are available based on
+ * the framework and hardware.
+ *
+ * The two SHARC cores provide a hefty amount of audio processing power. However, it is important
+ * to ensure that any audio processing code can run and complete within one frame of audio.
+ *
+ * The total number of cycles available in the audio callback can be calculated as follows:
+ * total cycles = ( processor-clock-speed * audio-block-size ) / audio-sample-rate
+ *
+ * For example, if the processor is running at 450MHz, the audio sampling rate is 48KHz and the audio
+ * block size is set to 32 words, the total number of processor cycles available in each callback
+ * is 300,000 cycles or 300,000/32 or 9,375 per sample of audio
+ */
 
 // When debugging audio algorithms, helpful to comment out this pragma for more linear single stepping.
 #pragma optimize_for_speed
 void processaudio_callback(void) {
 
-    // Otherwise, perform our C-based block processing here!
-    for (int i = 0; i < AUDIO_BLOCK_SIZE; i++) {
+	if (true) {
 
-        // *******************************************************************************
-        // Replace the pass-through code below with your custom audio processing code here
-        // *******************************************************************************
+		// Copy incoming audio buffers to the effects input buffers
+		copy_buffer(audiochannel_0_left_in, audio_effects_left_in,
+				AUDIO_BLOCK_SIZE);
+		copy_buffer(audiochannel_0_right_in, audio_effects_right_in,
+				AUDIO_BLOCK_SIZE);
 
+		// Process audio effects
+		audio_effects_process_audio_core1();
 
-        // Default: Pass audio just from 1/8" (or 1/4" on Audio Project Fin) inputs to outputs
+		// Copy processed audio back to input buffers
+		copy_buffer(audio_effects_left_out, audiochannel_0_left_in,
+				AUDIO_BLOCK_SIZE);
+		copy_buffer(audio_effects_right_out, audiochannel_0_right_in,
+				AUDIO_BLOCK_SIZE);
 
-        audiochannel_0_left_out[i]  = audiochannel_0_left_in[i];
-        audiochannel_0_right_out[i] = audiochannel_0_right_in[i];
+	}
 
-        /* Below are some additional examples of how to receive audio from the various input buffers
+	// Otherwise, perform our C-based block processing here!
+	for (int i = 0; i < AUDIO_BLOCK_SIZE; i++) {
 
-           // Example: Pass audio just from 1/8" (or 1/4" on Audio Project Fin) inputs to outputs
-           audioChannel_0_left_out[i] = audioChannel_0_left_in[i];
-           audioChannel_0_right_out[i] = AudioChannel_0_right_in[i];
+		// *******************************************************************************
+		// Replace the pass-through code below with your custom audio processing code here
+		// *******************************************************************************
 
-           // Example: mix audio in from 1/8" jacks and A2B input
-           audiochannel_0_left_out[i] = audiochannel_0_left_in[i] + audiochannel_a2b_0_left_in[i];
-           audiochannel_0_right_out[i] = audiochannel_0_right_in[i] + audiochannel_a2b_0_right_in[i];
+		// Default: Pass audio just from 1/8" (or 1/4" on Audio Project Fin) inputs to outputs
 
-           // Example: receive audio from S/PDIF inputs and analog inputs
-           audiochannel_0_left_out[i] = audiochannel_0_left_in[i] + audiochannel_spdif_0_left_in[i];
-           audiochannel_0_right_out[i] = audiochannel_0_right_in[i] + audiochannel_spdif_0_right_in[i];
+		audiochannel_0_left_out[i] = audiochannel_0_left_in[i];
+		audiochannel_0_right_out[i] = audiochannel_0_right_in[i];
 
-         */
+		/* Below are some additional examples of how to receive audio from the various input buffers
 
-        /*You can also write directly to the various output buffers to explicitly route
-         * audio to different peripherals (ADAU1761, S/PDIF, A2B, etc.).  If you're using both
-         * cores to process audio (configured in common/audio_system_config.h), write your
-         * processed audio data to the audiochannel_N_left_out/audiochannel_N_right_out buffers
-         * and direct the output to the second core.  The function below, processAudio_OutputRouting(),
-         * is then used to route audio returning from the second core to various peripherals.
-         *
-         * However, if you're only using a single core in the audio processing path, you can redirect audio to
-         * specific peripherals by writing to the corresponding output buffers as shown in the
-         * examples below.  When using just one core for processing, audio written to the
-         * audiochannel_0_left_out/audiochannel_0_right_out buffers will get sent to the ADAU1761.
+		 // Example: Pass audio just from 1/8" (or 1/4" on Audio Project Fin) inputs to outputs
+		 audioChannel_0_left_out[i] = audioChannel_0_left_in[i];
+		 audioChannel_0_right_out[i] = AudioChannel_0_right_in[i];
 
-            // Example: Send audio in from ADAU1761 to the A2B bus (be sure to enable A2B in audio_system_config.h)
-            audiochannel_a2b_0_left_out[i] = audiochannel_0_left_in[i];
-            audiochannel_a2b_0_right_out[i] = audiochannel_0_right_in[i];
+		 // Example: mix audio in from 1/8" jacks and A2B input
+		 audiochannel_0_left_out[i] = audiochannel_0_left_in[i] + audiochannel_a2b_0_left_in[i];
+		 audiochannel_0_right_out[i] = audiochannel_0_right_in[i] + audiochannel_a2b_0_right_in[i];
 
-            // Example: Send audio from ADAU1761 to the SPDIF transmitter
-            audiochannel_spdif_0_left_out[i]  = audiochannel_adau1761_0_left_in[i];
-            audiochannel_spdif_0_right_out[i] = audiochannel_adau1761_0_right_in[i];
+		 // Example: receive audio from S/PDIF inputs and analog inputs
+		 audiochannel_0_left_out[i] = audiochannel_0_left_in[i] + audiochannel_spdif_0_left_in[i];
+		 audiochannel_0_right_out[i] = audiochannel_0_right_in[i] + audiochannel_spdif_0_right_in[i];
 
-            // Example: Send first stereo pair from A2B bus to ADAU1761 audio out
-            audiochannel_0_left_out[i] = audiochannel_a2b_0_left_in[i];
-            audiochannel_0_right_out[i] = audiochannel_a2b_0_right_in[i];
-         */
+		 */
 
-        // If we're using Faust, copy audio into the flow
-        #if defined(USE_FAUST_ALGORITHM_CORE1) && USE_FAUST_ALGORITHM_CORE1
+		/* You can also write directly to the various output buffers to explicitly route
+		 * audio to different peripherals (ADAU1761, S/PDIF, A2B, etc.).  If you're using both
+		 * cores to process audio (configured in common/audio_system_config.h), write your
+		 * processed audio data to the audiochannel_N_left_out/audiochannel_N_right_out buffers
+		 * and direct the output to the second core.  The function below, processAudio_OutputRouting(),
+		 * is then used to route audio returning from the second core to various peripherals.
+		 *
+		 * However, if you're only using a single core in the audio processing path, you can redirect audio to
+		 * specific peripherals by writing to the corresponding output buffers as shown in the
+		 * examples below.  When using just one core for processing, audio written to the
+		 * audiochannel_0_left_out/audiochannel_0_right_out buffers will get sent to the ADAU1761.
 
-        // Copy 8 channel audio from Faust to output buffers
-        audiochannel_0_left_out[i]  = audioChannel_faust_0_left_out[i];
-        audiochannel_0_right_out[i] = audioChannel_faust_0_right_out[i];
-        audiochannel_1_left_out[i]  = audioChannel_faust_1_left_out[i];
-        audiochannel_1_right_out[i] = audioChannel_faust_1_right_out[i];
-        audiochannel_2_left_out[i]  = audioChannel_faust_2_left_out[i];
-        audiochannel_2_right_out[i] = audioChannel_faust_2_right_out[i];
-        audiochannel_3_left_out[i]  = audioChannel_faust_3_left_out[i];
-        audiochannel_3_right_out[i] = audioChannel_faust_3_right_out[i];
+		 // Example: Send audio in from ADAU1761 to the A2B bus (be sure to enable A2B in audio_system_config.h)
+		 audiochannel_a2b_0_left_out[i] = audiochannel_0_left_in[i];
+		 audiochannel_a2b_0_right_out[i] = audiochannel_0_right_in[i];
 
-        // Route audio to Faust for next block
-        audioChannel_faust_0_left_in[i]  = audiochannel_0_left_in[i] + audiochannel_spdif_0_left_in[i];
-        audioChannel_faust_0_right_in[i] = audiochannel_0_right_in[i] + audiochannel_spdif_0_right_in[i];
+		 // Example: Send audio from ADAU1761 to the SPDIF transmitter
+		 audiochannel_spdif_0_left_out[i]  = audiochannel_adau1761_0_left_in[i];
+		 audiochannel_spdif_0_right_out[i] = audiochannel_adau1761_0_right_in[i];
 
-        #endif
-    }
+		 // Example: Send first stereo pair from A2B bus to ADAU1761 audio out
+		 audiochannel_0_left_out[i] = audiochannel_a2b_0_left_in[i];
+		 audiochannel_0_right_out[i] = audiochannel_a2b_0_right_in[i];
+		 */
+   		// If we're using just one core and A2B is enabled, copy the output buffer to A2B bus as well
+#if (!USE_BOTH_CORES_TO_PROCESS_AUDIO) && (ENABLE_A2B)
+			audiochannel_a2b_0_left_out[i] = audiochannel_0_left_out[i];
+			audiochannel_a2b_0_right_out[i] = audiochannel_0_right_out[i];
+#endif
+
+		// If we're using Faust, copy audio into the flow
+#if (USE_FAUST_ALGORITHM_CORE1)
+
+		// Copy 8 channel audio from Faust to output buffers
+		audiochannel_0_left_out[i] = audioChannel_faust_0_left_out[i];
+		audiochannel_0_right_out[i] = audioChannel_faust_0_right_out[i];
+		audiochannel_1_left_out[i] = audioChannel_faust_1_left_out[i];
+		audiochannel_1_right_out[i] = audioChannel_faust_1_right_out[i];
+		audiochannel_2_left_out[i] = audioChannel_faust_2_left_out[i];
+		audiochannel_2_right_out[i] = audioChannel_faust_2_right_out[i];
+		audiochannel_3_left_out[i] = audioChannel_faust_3_left_out[i];
+		audiochannel_3_right_out[i] = audioChannel_faust_3_right_out[i];
+
+		// Route audio to Faust for next block
+		audioChannel_faust_0_left_in[i] = audiochannel_0_left_in[i] + audiochannel_spdif_0_left_in[i];
+		audioChannel_faust_0_right_in[i] = audiochannel_0_right_in[i] + audiochannel_spdif_0_right_in[i];
+
+#endif
+	}
+
 }
 
 #if (USE_BOTH_CORES_TO_PROCESS_AUDIO)
@@ -305,57 +337,61 @@ void processaudio_callback(void) {
 #pragma optimize_for_speed
 void processaudio_output_routing(void) {
 
-    static float t = 0;
+	static float t = 0;
 
-    for (int i = 0; i < AUDIO_BLOCK_SIZE; i++) {
+	for (int i = 0; i < AUDIO_BLOCK_SIZE; i++) {
 
-        // If automotive board is attached, send all 16 channels from core 2 to the DACs
-        #if defined(AUDIO_FRAMEWORK_16CH_SAM_AND_AUTOMOTIVE_FIN) && AUDIO_FRAMEWORK_16CH_SAM_AND_AUTOMOTIVE_FIN
+		// If automotive board is attached, send all 16 channels from core 2 to the DACs
+#if defined(AUDIO_FRAMEWORK_16CH_SAM_AND_AUTOMOTIVE_FIN) && AUDIO_FRAMEWORK_16CH_SAM_AND_AUTOMOTIVE_FIN
 
-        // Copy 16 channels from Core 2 to the DACs on the automotive board
-        audiochannel_automotive_0_left_out[i]  = audiochannel_from_sharc_core2_0_left[i];
-        audiochannel_automotive_0_right_out[i] = audiochannel_from_sharc_core2_0_right[i];
-        audiochannel_automotive_1_left_out[i]  = audiochannel_from_sharc_core2_1_left[i];
-        audiochannel_automotive_1_right_out[i] = audiochannel_from_sharc_core2_1_right[i];
-        audiochannel_automotive_2_left_out[i]  = audiochannel_from_sharc_core2_2_left[i];
-        audiochannel_automotive_2_right_out[i] = audiochannel_from_sharc_core2_2_right[i];
-        audiochannel_automotive_3_left_out[i]  = audiochannel_from_sharc_core2_3_left[i];
-        audiochannel_automotive_3_right_out[i] = audiochannel_from_sharc_core2_3_right[i];
-        audiochannel_automotive_4_left_out[i]  = audiochannel_from_sharc_core2_4_left[i];
-        audiochannel_automotive_4_right_out[i] = audiochannel_from_sharc_core2_4_right[i];
-        audiochannel_automotive_5_left_out[i]  = audiochannel_from_sharc_core2_5_left[i];
-        audiochannel_automotive_5_right_out[i] = audiochannel_from_sharc_core2_5_right[i];
-        audiochannel_automotive_6_left_out[i]  = audiochannel_from_sharc_core2_6_left[i];
-        audiochannel_automotive_6_right_out[i] = audiochannel_from_sharc_core2_6_right[i];
-        audiochannel_automotive_7_left_out[i]  = audiochannel_from_sharc_core2_7_left[i];
-        audiochannel_automotive_7_right_out[i] = audiochannel_from_sharc_core2_7_right[i];
+		// Copy 16 channels from Core 2 to the DACs on the automotive board
+		audiochannel_automotive_0_left_out[i] = audiochannel_from_sharc_core2_0_left[i];
+		audiochannel_automotive_0_right_out[i] = audiochannel_from_sharc_core2_0_right[i];
+		audiochannel_automotive_1_left_out[i] = audiochannel_from_sharc_core2_1_left[i];
+		audiochannel_automotive_1_right_out[i] = audiochannel_from_sharc_core2_1_right[i];
+		audiochannel_automotive_2_left_out[i] = audiochannel_from_sharc_core2_2_left[i];
+		audiochannel_automotive_2_right_out[i] = audiochannel_from_sharc_core2_2_right[i];
+		audiochannel_automotive_3_left_out[i] = audiochannel_from_sharc_core2_3_left[i];
+		audiochannel_automotive_3_right_out[i] = audiochannel_from_sharc_core2_3_right[i];
+		audiochannel_automotive_4_left_out[i] = audiochannel_from_sharc_core2_4_left[i];
+		audiochannel_automotive_4_right_out[i] = audiochannel_from_sharc_core2_4_right[i];
+		audiochannel_automotive_5_left_out[i] = audiochannel_from_sharc_core2_5_left[i];
+		audiochannel_automotive_5_right_out[i] = audiochannel_from_sharc_core2_5_right[i];
+		audiochannel_automotive_6_left_out[i] = audiochannel_from_sharc_core2_6_left[i];
+		audiochannel_automotive_6_right_out[i] = audiochannel_from_sharc_core2_6_right[i];
+		audiochannel_automotive_7_left_out[i] = audiochannel_from_sharc_core2_7_left[i];
+		audiochannel_automotive_7_right_out[i] = audiochannel_from_sharc_core2_7_right[i];
 
-        #else
+#else
 
-        // If A2B enabled, route audio down the A2B bus
-            #if (ENABLE_A2B)
+		// If A2B enabled, route audio down the A2B bus
+#if (ENABLE_A2B)
 
-        // Send all 8 channels from core 2 down the A2B bus
-        audiochannel_a2b_0_left_out[i]  = audiochannel_from_sharc_core2_0_left[i];
-        audiochannel_a2b_0_right_out[i] = audiochannel_from_sharc_core2_0_right[i];
-        audiochannel_a2b_1_left_out[i]  = audiochannel_from_sharc_core2_1_left[i];
-        audiochannel_a2b_1_right_out[i] = audiochannel_from_sharc_core2_1_right[i];
-        audiochannel_a2b_2_left_out[i]  = audiochannel_from_sharc_core2_2_left[i];
-        audiochannel_a2b_2_right_out[i] = audiochannel_from_sharc_core2_2_right[i];
-        audiochannel_a2b_3_left_out[i]  = audiochannel_from_sharc_core2_3_left[i];
-        audiochannel_a2b_3_right_out[i] = audiochannel_from_sharc_core2_3_right[i];
+		// Send all 8 channels from core 2 down the A2B bus
+		audiochannel_a2b_0_left_out[i] = audiochannel_from_sharc_core2_0_left[i];
+		audiochannel_a2b_0_right_out[i] = audiochannel_from_sharc_core2_0_right[i];
+		audiochannel_a2b_1_left_out[i] = audiochannel_from_sharc_core2_1_left[i];
+		audiochannel_a2b_1_right_out[i] = audiochannel_from_sharc_core2_1_right[i];
+		audiochannel_a2b_2_left_out[i] = audiochannel_from_sharc_core2_2_left[i];
+		audiochannel_a2b_2_right_out[i] = audiochannel_from_sharc_core2_2_right[i];
+		audiochannel_a2b_3_left_out[i] = audiochannel_from_sharc_core2_3_left[i];
+		audiochannel_a2b_3_right_out[i] = audiochannel_from_sharc_core2_3_right[i];
 
-            #endif
+#endif
 
-        // Send Audio from SHARC Core 2 out to the DACs (1/8" audio out connector)
-        audiochannel_adau1761_0_left_out[i]  = audiochannel_from_sharc_core2_0_left[i];
-        audiochannel_adau1761_0_right_out[i] = audiochannel_from_sharc_core2_0_right[i];
+		// Send Audio from SHARC Core 2 out to the DACs (1/8" audio out connector)
+		audiochannel_adau1761_0_left_out[i] =
+				audiochannel_from_sharc_core2_0_left[i];
+		audiochannel_adau1761_0_right_out[i] =
+				audiochannel_from_sharc_core2_0_right[i];
 
-        // Send audio from SHARC Core 2 to the SPDIF transmitter as well
-        audiochannel_spdif_0_left_out[i]  = audiochannel_from_sharc_core2_0_left[i];
-        audiochannel_spdif_0_right_out[i] = audiochannel_from_sharc_core2_0_right[i];
-        #endif
-    }
+		// Send audio from SHARC Core 2 to the SPDIF transmitter as well
+		audiochannel_spdif_0_left_out[i] =
+				audiochannel_from_sharc_core2_0_left[i];
+		audiochannel_spdif_0_right_out[i] =
+				audiochannel_from_sharc_core2_0_right[i];
+#endif
+	}
 }
 #endif
 
@@ -365,9 +401,10 @@ void processaudio_output_routing(void) {
  */
 void processaudio_background_loop(void) {
 
-    // *******************************************************************************
-    // Add any custom background processing here
-    // *******************************************************************************
+	// *******************************************************************************
+	// Add any custom background processing here
+	// *******************************************************************************
+
 }
 
 /*

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Analog Devices, Inc.  All rights reserved.
+ * Copyright (c) 2018-2019 Analog Devices, Inc.  All rights reserved.
  *
  * Bare-Metal ("BM") device driver  for system control support
  *
@@ -54,7 +54,10 @@ uint8_t hadc_instance_memory[ADI_HADC_MEM_SIZE];
 // Channels for converted data
 uint16_t hadc_channeldata_raw[HADC_CHANNELS] = {0};
 uint16_t hadc_channeldata_raw_last[HADC_CHANNELS] = {8192};
-float hadc_channeldata_float[HADC_CHANNELS];
+
+static float hadc_channeldata_float[HADC_CHANNELS]={0.0};
+static float hadc_channeldata_float_pre[HADC_CHANNELS]={0.0};
+
 
 void (*one_ms_tick_callback)(void) = NULL;
 
@@ -88,11 +91,10 @@ static void systemtimer_handler(void *pCBParam,
                 for (i = 0; i < HADC_CHANNELS; i++) {
 
                     // Add some hysteresis to remove noise when they POTs aren't changing
-                    if (abs(hadc_channeldata_raw[i] - hadc_channeldata_raw_last[i]) > 6) {
-                        hadc_channeldata_float[i] = ((float)hadc_channeldata_raw[i]) * (1.0 / HADC_MAX);
-                    }
+					float cur_val = ((float)hadc_channeldata_raw[i]) * (1.0 / HADC_MAX);
+					hadc_channeldata_float_pre[i] += 0.01*(cur_val - hadc_channeldata_float_pre[i]);
+					hadc_channeldata_float[i] = floor(hadc_channeldata_float_pre[i]*1000.0)*.001;
 
-                    hadc_channeldata_raw_last[i] = hadc_channeldata_raw[i];
                 }
 
                 // Wait until the conversion sequence to is complete (although it
@@ -125,7 +127,7 @@ static void systemtimer_handler(void *pCBParam,
 }
 
 /**
- * @brief      { function_description }
+ * @brief      Configures clocks, power, HADC and system tick
  *
  * * simple_sysctrl_init() sets up the various back-end functionality required.  It
  * should be called before any other functions in this library.  This library can

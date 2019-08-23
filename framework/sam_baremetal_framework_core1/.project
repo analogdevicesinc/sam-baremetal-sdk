@@ -34,6 +34,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>src/audio_processing</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/audio_processing</locationURI>
+		</link>
+		<link>
 			<name>src/common</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/common</locationURI>

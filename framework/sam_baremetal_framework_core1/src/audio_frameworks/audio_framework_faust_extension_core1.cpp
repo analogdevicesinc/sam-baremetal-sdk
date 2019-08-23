@@ -7,13 +7,15 @@
 
 // Define your audio system parameters in this file
 #include "common/audio_system_config.h"
+#include "../callback_audio_processing.h"
 
-#if (defined(USE_FAUST_ALGORITHM_CORE1) && USE_FAUST_ALGORITHM_CORE1) || defined(USE_FAUST_ALGORITHM_CORE2) && USE_FAUST_ALGORITHM_CORE2
+#if USE_FAUST_ALGORITHM_CORE1
 
 // Structure containing shared variables between the three cores
 #include "common/multicore_shared_memory.h"
 
 // UART functionality for MIDI driver on Audio Project Fin
+#include "drivers/bm_uart_driver/bm_uart.h"
 
 #include "audio_framework_faust_extension_core1.h"
 
@@ -23,7 +25,7 @@
 samFaustDSP *aSamFaustDSP;
 
 // Instance of UART driver for MIDI
-BM_UART MIDI_UART;
+static BM_UART midi_uart;
 
 // Input and output buffers for Faust
 float audioChannel_faust_0_left_in[AUDIO_BLOCK_SIZE];
@@ -87,12 +89,12 @@ void faust_initialize(void){
 
     // Initialize FIFO pointers for moving MIDI events from SHARC core 1 to SHARC core 2
     #if (USE_FAUST_ALGORITHM_CORE2)
-    multicore_data->sh1_sh2_fifo_read_ptr = 0;
-    multicore_data->sh1_sh2_fifo_write_ptr = 0;
+		multicore_data->sh1_sh2_fifo_read_ptr = 0;
+		multicore_data->sh1_sh2_fifo_write_ptr = 0;
     #endif
 
     // Initialize the MIDI / UART interface
-    if (uart_initialize(&MIDI_UART,
+    if (uart_initialize(&midi_uart,
                         UART_BAUD_RATE_MIDI,
                         UART_SERIAL_8N1,
                         UART_AUDIOPROJ_DEVICE_MIDI)
@@ -102,7 +104,7 @@ void faust_initialize(void){
     }
 
     // Set a call back for received MIDI bytes
-    uart_set_rx_callback(&MIDI_UART, faust_midi_rx_callback);
+    uart_set_rx_callback(&midi_uart, faust_midi_rx_callback);
 }
 
 /**
@@ -200,9 +202,9 @@ static void faust_midi_rx_callback(void) {
 
     uint8_t val;
 
-    while (uart_available(&MIDI_UART)) {
+    while (uart_available(&midi_uart)) {
 
-        uart_read_byte(&MIDI_UART, &val);
+        uart_read_byte(&midi_uart, &val);
         // state machine to implement simple MIDI parsing.
         //printf("MIDI Byte = <%x>\n", val);
 

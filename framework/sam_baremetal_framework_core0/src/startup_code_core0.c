@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Analog Devices, Inc.  All rights reserved.
+ * Copyright (c) 2018-2019 Analog Devices, Inc.  All rights reserved.
  */
 
 #include <stdio.h>
@@ -118,6 +118,11 @@ int main(int argc, const char *argv[]) {
 
     // Initialize our selected the audio framework
     audioframework_initialize();
+
+    // Initialize the effects presets
+    multicore_data->total_effects_presets = 10;
+    multicore_data->effects_preset = 0;
+    multicore_data->reverb_preset = 0;
 
     #if defined(MIDI_UART_MANAGED_BY_ARM_CORE) && (MIDI_UART_MANAGED_BY_ARM_CORE)
     if (midi_setup_arm()) {

@@ -19,6 +19,7 @@
 
 // Define your audio system parameters in this file
 #include "common/audio_system_config.h"
+#include "../callback_audio_processing.h"
 
 #if (defined(AUDIO_FRAMEWORK_8CH_SAM_AND_AUDIOPROJ_FIN) && AUDIO_FRAMEWORK_8CH_SAM_AND_AUDIOPROJ_FIN) || (defined(AUDIO_FRAMEWORK_A2B_BYPASS_SC589) && AUDIO_FRAMEWORK_A2B_BYPASS_SC589)
 
@@ -45,7 +46,7 @@
 // Hooks into user processing functions
 #include "../callback_audio_processing.h"
 
-#if    defined(USE_FAUST_ALGORITHM_CORE1) && USE_FAUST_ALGORITHM_CORE1
+#if (USE_FAUST_ALGORITHM_CORE1)
 #include "audio_framework_faust_extension_core1.h"
 #endif
 
@@ -661,7 +662,7 @@ void audioframework_audiocallback_handler(uint32_t iid) {
     }
 
 
-	#if SAM_AUDIOPROJ_FIN_BOARD_PRESENT
+	#if (SAM_AUDIOPROJ_FIN_BOARD_PRESENT)
 		float amplitude = 0;
 		for (int i=0;i<AUDIO_BLOCK_SIZE;i++) {
 			amplitude += fabs(audiochannel_0_left_in[i]);
@@ -703,8 +704,8 @@ void audioframework_initialize() {
     multicore_data->sharc_core1_dropped_audio_frames = 0;
 
     // If we're using Faust on either core, initialize the Faust engine
-    #if (defined(USE_FAUST_ALGORITHM_CORE1) && USE_FAUST_ALGORITHM_CORE1) || defined(USE_FAUST_ALGORITHM_CORE2) && USE_FAUST_ALGORITHM_CORE2
-    faust_initialize();
+    #if (USE_FAUST_ALGORITHM_CORE1)
+    	faust_initialize();
     #endif
 
     // Initialize peripherals and DMA to configure audio data I/O flow
@@ -713,21 +714,20 @@ void audioframework_initialize() {
     audioflow_init_sport_dma(&SPR2_spdif_2CH_Config);
 
     // Set up interrupt handler for our audio callback (set at a lower interrupt priority)
-//    adi_int_InstallHandler(INTR_SOFT7, (ADI_INT_HANDLER_PTR) audioframework_audiocallback_handler, NULL, true);
     adi_int_InstallHandler(INTR_TRU0_INT4, (ADI_INT_HANDLER_PTR)audioframework_audiocallback_handler, NULL, true);
 
     #if (USE_BOTH_CORES_TO_PROCESS_AUDIO)
-    // Set pointers in our shared memory structure
-    multicore_data->sharc_core1_audio_out = audiochannels_to_sharc_core2;
-    multicore_data->sharc_core1_audio_in  = audiochannels_from_sharc_core2;
+		// Set pointers in our shared memory structure
+		multicore_data->sharc_core1_audio_out = audiochannels_to_sharc_core2;
+		multicore_data->sharc_core1_audio_in  = audiochannels_from_sharc_core2;
     #endif
 
     // Let everyone know that SHARC Core 1 is ready
     multicore_data->sharc_core1_ready_for_audio = true;
 
     #if (USE_BOTH_CORES_TO_PROCESS_AUDIO)
-    // Wait for SHARC Core 2 to let us know it's ready
-    while (!multicore_data->sharc_core2_ready_for_audio) {}
+		// Wait for SHARC Core 2 to let us know it's ready
+		while (!multicore_data->sharc_core2_ready_for_audio) {}
     #endif
 }
 

@@ -7,8 +7,9 @@
 
 // Define your audio system parameters in this file
 #include "common/audio_system_config.h"
+#include "../callback_audio_processing.h"
 
-#if defined(USE_FAUST_ALGORITHM_CORE2) && USE_FAUST_ALGORITHM_CORE2
+#if (USE_FAUST_ALGORITHM_CORE2)
 
 // Structure containing shared variables between the three cores
 #include "common/multicore_shared_memory.h"
@@ -46,6 +47,12 @@ float audioChannel_faust_3_right_out[AUDIO_BLOCK_SIZE];
 static void faust_handle_pot(int MIDI_Value, int MIDI_Controller);
 static void faust_handle_pushbutton(bool enable, int MIDI_Controller);
 static void faust_core2_process_midi(uint8_t val);
+static void faust_midi_rx_callback(void);
+
+#if !USE_FAUST_ALGORITHM_CORE1
+// Instance of UART driver for MIDI
+static BM_UART midi_uart;
+#endif
 
 /**
  * @brief      Faust engine init for Core 2
@@ -75,6 +82,22 @@ void faust_initialize(){
                                         audioChannel_faust_2_right_in,
                                         audioChannel_faust_3_left_in,
                                         audioChannel_faust_3_right_in);
+
+	#if !USE_FAUST_ALGORITHM_CORE1
+
+		// Initialize the MIDI / UART interface
+		if (uart_initialize(&midi_uart,
+							UART_BAUD_RATE_MIDI,
+							UART_SERIAL_8N1,
+							UART_AUDIOPROJ_DEVICE_MIDI)
+			!= UART_SUCCESS) {
+
+			// handle initialization errors here
+		}
+
+		// Set a call back for received MIDI bytes
+		uart_set_rx_callback(&midi_uart, faust_midi_rx_callback);
+	#endif
 }
 
 /**
@@ -86,18 +109,28 @@ void faust_initialize(){
  */
 void Faust_audio_processing(){
 
-    // check the FIFO for any new bytes.  When read pointer = write pointer, FIFO is empty.
-    if (multicore_data->sh1_sh2_fifo_write_ptr != multicore_data->sh1_sh2_fifo_read_ptr) {
+	/**
+	 * If core 1 is also being used for Faust, core 1 will pass along MIDI bytes
+	 * via the fifo in our shared memory structure.  If core 1 is not being used for
+	 * Faust, core 2 will connect to the UART directly.  In this case, new MIDI
+	 * bytes will come in via the faust_midi_rx_callback() routine.
+	 */
+	#if USE_FAUST_ALGORITHM_CORE1
 
-        uint8_t midi_byte = multicore_data->sh1_sh2_byte_fifo[multicore_data->sh1_sh2_fifo_read_ptr++];
+		// check the FIFO for any new bytes.  When read pointer = write pointer, FIFO is empty.
+		if (multicore_data->sh1_sh2_fifo_write_ptr != multicore_data->sh1_sh2_fifo_read_ptr) {
 
-        // Wrap the read pointer if necessary
-        if (multicore_data->sh1_sh2_fifo_read_ptr >= SH1_SH2_BYTE_FIFO_SIZE) {
-            multicore_data->sh1_sh2_fifo_read_ptr = 0;
-        }
+			uint8_t midi_byte = multicore_data->sh1_sh2_byte_fifo[multicore_data->sh1_sh2_fifo_read_ptr++];
 
-        faust_core2_process_midi(midi_byte);
-    }
+			// Wrap the read pointer if necessary
+			if (multicore_data->sh1_sh2_fifo_read_ptr >= SH1_SH2_BYTE_FIFO_SIZE) {
+				multicore_data->sh1_sh2_fifo_read_ptr = 0;
+			}
+
+			faust_core2_process_midi(midi_byte);
+		}
+
+	#endif
 
     // Process this block of audio
     static float lastPotValue0 = -1.0;
@@ -265,4 +298,22 @@ static void faust_core2_process_midi(uint8_t val) {
     } // switch
 }
 
-#endif
+#if !USE_FAUST_ALGORITHM_CORE1
+/**
+ * @brief Callback for UART interrupt when only core 2 is running Faust
+ */
+static void faust_midi_rx_callback(void) {
+
+    uint8_t val;
+
+    while (uart_available(&midi_uart)) {
+
+    	// Get byte from UART RX FIFO and send to Faust
+        uart_read_byte(&midi_uart, &val);
+        faust_core2_process_midi(val);
+
+    }
+}
+#endif // !USE_FAUST_ALGORITHM_CORE1
+
+#endif // USE_FAUST_ALGORITHM_CORE2

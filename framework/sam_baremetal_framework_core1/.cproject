@@ -93,16 +93,33 @@
 					</folderInfo>
 					<folderInfo id="sharc.toolchain.configuration.debug.1222309712.1997822671" name="/" resourcePath="src/faust">
 						<toolChain id="sharc.toolchain.1362619486" name="CrossCore SHARC Toolchain" superClass="sharc.toolchain" unusedChildren="">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="sharc.platform" name="CrossCore SHARC Target Platform" osList="all" superClass="sharc.platform"/>
 							<tool id="sharc.toolchain.assembler.1895238708" name="CrossCore SHARC Assembler" superClass="sharc.toolchain.assembler.813040831">
 								<inputType id="assembler.input.893251628" name="Assembler Source" superClass="assembler.input"/>
 							</tool>
 							<tool id="sharc.toolchain.compiler.1978978030" name="CrossCore SHARC C/C++ Compiler" superClass="sharc.toolchain.compiler.1492438637">
-								<option id="compiler.option.optimization.1170485438" superClass="compiler.option.optimization" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="compiler.option.optimization.1170485438" name="Enable optimization (-O)" superClass="compiler.option.optimization" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="compiler.option.warningannotationremark.1320466441" superClass="compiler.option.warningannotationremark" useByScannerDiscovery="false" value="compiler.option.warningannotationremark.enumerated.errors" valueType="enumerated"/>
 								<inputType id="compiler.inputType.681559377" name="C/C++ Source" superClass="compiler.inputType"/>
 							</tool>
 							<tool id="sharc.toolchain.linker.1430403279" name="CrossCore SHARC Linker" superClass="sharc.toolchain.linker.1190318091"/>
 							<tool id="sharc.toolchain.archiver.1169910820" name="CrossCore SHARC Archiver" superClass="sharc.toolchain.archiver.452208213"/>
 							<tool id="sharc.toolchain.loader.1767278250" name="CrossCore SHARC Loader" superClass="sharc.toolchain.loader.129891532"/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="sharc.toolchain.configuration.debug.1222309712.311140239" name="/" resourcePath="src/audio_processing">
+						<toolChain id="sharc.toolchain.1278999442" name="CrossCore SHARC Toolchain" superClass="sharc.toolchain" unusedChildren="">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="sharc.platform" name="CrossCore SHARC Target Platform" osList="all" superClass="sharc.platform"/>
+							<tool id="sharc.toolchain.assembler.69919680" name="CrossCore SHARC Assembler" superClass="sharc.toolchain.assembler.813040831">
+								<inputType id="assembler.input.1199447677" name="Assembler Source" superClass="assembler.input"/>
+							</tool>
+							<tool id="sharc.toolchain.compiler.1380302906" name="CrossCore SHARC C/C++ Compiler" superClass="sharc.toolchain.compiler.1492438637">
+								<option id="compiler.option.optimization.815274356" name="Enable optimization (-O)" superClass="compiler.option.optimization" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<inputType id="compiler.inputType.2071614449" name="C/C++ Source" superClass="compiler.inputType"/>
+							</tool>
+							<tool id="sharc.toolchain.linker.935300317" name="CrossCore SHARC Linker" superClass="sharc.toolchain.linker.1190318091"/>
+							<tool id="sharc.toolchain.archiver.275502208" name="CrossCore SHARC Archiver" superClass="sharc.toolchain.archiver.452208213"/>
+							<tool id="sharc.toolchain.loader.1494278273" name="CrossCore SHARC Loader" superClass="sharc.toolchain.loader.129891532"/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="sharc.toolchain.configuration.debug.1222309712.181384145" name="/" resourcePath="src/common">

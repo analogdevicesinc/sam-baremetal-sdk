@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Analog Devices, Inc.  All rights reserved.
+ * Copyright (c) 2018-2019 Analog Devices, Inc.  All rights reserved.
  *
  * Bare-Metal ("BM") device driver for event logging.
  *
@@ -517,7 +517,7 @@ static void event_logging_make_timestamp(BM_SYSTEM_EVENT *event,
  * The code below is only compiled on the SHARC processors, not on the ARM
  */
 
-#if defined (CORE1) || defined(CORE2)
+#if defined(CORE1) || defined(CORE2)
 
 #include <sys/adi_core.h>
 #include <sys/platform.h>

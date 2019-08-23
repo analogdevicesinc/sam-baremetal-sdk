@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Analog Devices, Inc.  All rights reserved.
+ * Copyright (c) 2018-2019 Analog Devices, Inc.  All rights reserved.
  */
 
 #ifndef _MULTICORE_AUDIO_SIMPLE_H
@@ -92,6 +92,11 @@ typedef struct
         
     #endif
     uint32_t audio_project_fin_present;
+
+    // Effects processing presets
+    uint32_t	effects_preset;
+    uint32_t	reverb_preset;
+    uint32_t	total_effects_presets;
 
 
     /**

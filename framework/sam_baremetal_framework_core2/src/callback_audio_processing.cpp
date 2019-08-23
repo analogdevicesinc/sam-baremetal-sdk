@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Analog Devices, Inc.  All rights reserved.
+ * Copyright (c) 2018-2019 Analog Devices, Inc.  All rights reserved.
  *
  * These are the hooks for the your audio processing functions.
  *
@@ -17,7 +17,10 @@
 // Variables related to the audio framework that is currently selected (e.g. input and output buffers)
 #include "audio_framework_selector.h"
 
-// Prototypes for these functions
+// Includes all header files for effects and calls for effect selector
+#include "audio_processing/audio_effects_selector.h"
+
+// Prototypes for this file
 #include "callback_audio_processing.h"
 
 /*
@@ -115,6 +118,9 @@
  */
 void processaudio_setup(void) {
 
+	// Initialize the audio effects in the audio_processing/ folder
+	audio_effects_setup_core2();
+
     // *******************************************************************************
     // Add any custom setup code here
     // *******************************************************************************
@@ -145,6 +151,21 @@ void processaudio_setup(void) {
 void processaudio_callback(void) {
 
     int i;
+
+	if (true) {
+
+		// Copy incoming audio buffers to the effects input buffers
+		copy_buffer(audiochannel_0_left_in,  audio_effects_left_in, AUDIO_BLOCK_SIZE);
+		copy_buffer(audiochannel_0_right_in, audio_effects_right_in, AUDIO_BLOCK_SIZE);
+
+		// Process audio effects
+		audio_effects_process_audio_core2();
+
+		// Copy processed audio back to input buffers
+		copy_buffer(audio_effects_left_out, audiochannel_0_left_in, AUDIO_BLOCK_SIZE);
+		copy_buffer(audio_effects_right_out, audiochannel_0_right_in, AUDIO_BLOCK_SIZE);
+
+	}
 
     for (i = 0; i < AUDIO_BLOCK_SIZE; i++) {
 
@@ -211,6 +232,8 @@ void processaudio_background_loop(void) {
     // *******************************************************************************
     // Add any custom background processing here
     // *******************************************************************************
+
+
 }
 
 /*
